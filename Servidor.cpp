@@ -26,22 +26,24 @@ using namespace std;
 /*
 
 int divideImage(const cv::Mat& img, const int blockWidth, std::vector<cv::Mat>& blocks){
-    // Checking if the image was passed correctly
+    //Comprueba si la imagen paso correctamente
     if (!img.data || img.empty())
     {
         std::cout << "Image Error: Cannot load image to divide." << std::endl;
         return EXIT_FAILURE;
     }
 
-    // init image dimensions
+    // Dimensiones de la imagen
     int imgWidth = img.cols;
     int imgHeight = img.rows;
     std::cout << "IMAGE SIZE: " << "(" << imgWidth << "," << imgHeight << ")" << std::endl;
 
-    // init block dimensions
+    // Dimensiones de los bloques (paginas)
     int bwSize;
     int bhSize = img.rows;
 
+
+    //Division de la imagen en bloques
     int y0 = 0;
     int x0 = 0;
     while (x0 < imgWidth)
@@ -57,13 +59,13 @@ int divideImage(const cv::Mat& img, const int blockWidth, std::vector<cv::Mat>& 
 }
 
 
- //function that serialize the image, convert the Mat image to serialized string and viceversa
-
+//Funcion que serializa la imagen, conviete el Mat image a string serializado y viceversa
 BOOST_SERIALIZATION_SPLIT_FREE( cv::Mat )
 
 namespace boost {
     namespace serialization {
         template <class Archive>
+        //Funcion que guarda los datos de la imagen
         void save( Archive & ar, const cv::Mat & m, const unsigned int version )
         {
             size_t elemSize = m.elemSize();
@@ -79,6 +81,7 @@ namespace boost {
                 ar & m.data[ i ];
         }
         template <class Archive>
+        //Funcion que carga los datos de la imagen para su uso posterior
         void load( Archive & ar, cv::Mat& m, const unsigned int version )
         {
             int cols, rows;
@@ -97,7 +100,7 @@ namespace boost {
     }
 }
 
-
+//Funcion que conviete el Mat image a string serializado
 std::string save( const cv::Mat & mat )
 {
     std::ostringstream oss;
@@ -108,7 +111,7 @@ std::string save( const cv::Mat & mat )
 }
 
 
-
+//Funcion que convierte el string seerializado en Mat image
 void load( cv::Mat & mat, const char * data_str )
 {
     std::stringstream ss;
@@ -133,7 +136,7 @@ void SendMessage(boost::asio::ip::tcp::socket & socket, string message) {
     boost::asio::write( socket, boost::asio::buffer(msg));
 }
 
-
+    //Funcion main que implementa el algoritmo de paginacion
     /*int main() {
     boost::asio::io_service io_service; //input/output service
     boost::asio::ip::tcp::acceptor acceptor_(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),1234));
@@ -149,8 +152,8 @@ void SendMessage(boost::asio::ip::tcp::socket & socket, string message) {
     int size = stoi(sizeMessage);
 
     vector<cv::Mat> blocks;
-    //receiving the image source
-    
+
+    //Resive la imagen fuente
     for (int i = 0; i < size; i++) {
         string message = ReadMessage(socket_); // Lee y declara mensaje del cliente
         SendMessage(socket_, "Pedazo " + to_string(i) + " recibido");
@@ -159,8 +162,8 @@ void SendMessage(boost::asio::ip::tcp::socket & socket, string message) {
         load(result, message.c_str());
         blocks.push_back(result);
     }
-//Funcion que lee mensaje enviado por cliente
 
+//Funcion que lee mensaje enviado por cliente
 string ReadMessage(boost::asio::ip::tcp::socket & socket) 
     {
     boost::asio::streambuf buf; // Buffer de entrada de mensajes
@@ -170,16 +173,15 @@ string ReadMessage(boost::asio::ip::tcp::socket & socket)
     }
 
 //Funcion que envia mensaje al cliente
-
 void SendMessage(boost::asio::ip::tcp::socket & socket, const string& message) {
     const string msg = message + "\n"; // Declara variable string con un delimitador linea siguiente
     boost::asio::write( socket, boost::asio::buffer(message)); // Envia mensaje a cliente mediante buffer
 }*/
 
+//Protocolo de Socket funcional
 int main() {
     boost::asio::io_service io_service; // Servicio de input/output
-    boost::asio::ip::tcp::acceptor acceptor_(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 1234));
-                                            // Acepta de manera asincrona conexiones en puerto 1234
+    boost::asio::ip::tcp::acceptor acceptor_(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 1234)); // Acepta de manera asincrona conexiones en puerto 1234
     boost::asio::ip::tcp::socket socket_(io_service); // Declaracion de socket para conexiones
 
     cout << "Servidor iniciado" << endl;

@@ -21,15 +21,14 @@ using namespace std;
 using namespace cv;*/
 
 
-/**
- * function that serialize the image, convert the Mat image to serialized string and viceversa
- */
+//Funcion que serializa la imagen, conviete el Matimagen a string serializado y viceverza
 /*BOOST_SERIALIZATION_SPLIT_FREE( cv::Mat )
 
 namespace boost {
     namespace serialization {
 
         template <class Archive>
+        //Funcion que guarda los datos de la imagen
         void save( Archive & ar, const cv::Mat & m, const unsigned int version )
         {
             size_t elemSize = m.elemSize();
@@ -46,6 +45,7 @@ namespace boost {
         }
 
         template <class Archive>
+        //Funcion que carga los datos de la imagen para su uso posterior
         void load( Archive & ar, cv::Mat& m, const unsigned int version )
         {
             int cols, rows;
@@ -63,7 +63,8 @@ namespace boost {
         }
     }
 }
-//function that convert the Mat image to serialized string
+
+//Funcion que convierte el Mat image a string serializado
 std::string save( const cv::Mat & mat )
 {
     std::ostringstream oss;
@@ -72,7 +73,8 @@ std::string save( const cv::Mat & mat )
 
     return oss.str();
 }
-//function that convert serialized string to Mat image
+
+//Funcion que convierte el string serializado a Mat image
 void load( cv::Mat & mat, const char * data_str )
 {
     std::stringstream ss;
@@ -82,26 +84,26 @@ void load( cv::Mat & mat, const char * data_str )
     tia >> mat;
 }
 
-//function that divide the Mat image in several Mat objects
-
+//Funcion que divide el Mat image en distintos objetos Mat
 int divideImage(const cv::Mat& img, const int blockWidth, std::vector<cv::Mat>& blocks)
 {
-    // Checking if the image was passed correctly
+    // Comprueba si la imagen paso correctamente
     if (!img.data || img.empty())
     {
         std::cout << "Image Error: Cannot load image to divide." << std::endl;
         return EXIT_FAILURE;
     }
 
-    // init image dimensions
+    // Dimensiones de la imagen
     int imgWidth = img.cols;
     int imgHeight = img.rows;
     std::cout << "IMAGE SIZE: " << "(" << imgWidth << "," << imgHeight << ")" << std::endl;
 
-    // init block dimensions
+    // Dimenciones de los bloques (paginas)
     int bwSize;
     int bhSize = img.rows;
 
+    //Dimencion de la imagen en bloques
     int y0 = 0;
     int x0 = 0;
     while (x0 < imgWidth)
@@ -115,21 +117,24 @@ int divideImage(const cv::Mat& img, const int blockWidth, std::vector<cv::Mat>& 
     }
     return EXIT_SUCCESS;
 }
-//function that read the input messages
 
+//Funcion  que lee mensaje enviado por el servidor
 string ReadMessage(boost::asio::ip::tcp::socket & socket) {
     boost::asio::streambuf buf; // Buffer de entrada de mensajes
     boost::asio::read_until( socket, buf, "\n"); //  Indica que lea mensaje del socket desde el buffer hasta el delimitador \n
     string data = boost::asio::buffer_cast<const char*>(buf.data()); // Hace cast del buffer de entrada a un char pointer (caracteres legibles)
     return data; // Retorna el mensaje recibido
 }
-//function that send output messages
+//Funcion que envia mensaje al servidor
 void SendMessage(boost::asio::ip::tcp::socket & socket, string message) {
     string msg = message + "\n"; // Declara variable string con un delimitador linea siguiente
     boost::asio::write( socket, boost::asio::buffer(msg)); // Envia mensaje a cliente mediante buffer
 }*/
+
+
 int main() {
 
+    //Funcion main que implementa el algoritmo de paginacion
     /*cv::Mat image = imread("/home/alisson/Documentos/Proyecto1/Prueba.jpeg", IMREAD_COLOR);
     if (image.empty()) { //Verify if the image has been readed correctly
         cout << "Image File "
@@ -138,29 +143,27 @@ int main() {
         return -1;
     }
 
-     //Divide the image
-     
+    //Division de la imagen
     const int blockw = 50; //size of the blocks image that will be generated
     std::vector<cv::Mat> blocks; //vector that contains the blocks of image
     int divideStatus = divideImage(image, blockw, blocks); //divide image
-    */
-    //Socket
-    /*
+    
+    //Socket con implementacion de paginacion
     boost::asio::io_service io_service; //input/output service
     boost::asio::ip::tcp::socket socket(io_service); //declaration of sockets for conections
 
     socket.connect(boost::asio::ip::tcp::endpoint( boost::asio::ip::address::from_string("127.0.0.1"), 1234));
     cout << "Conectado al servidor" << endl;
     //string size = to_string(blocks.size());
-    //send the size of vector blocks
-     
+
+    //Enviar el tamaño del vector en bloques
     //SendMessage(socket, size);
     SendMessage(socket, message);
     string receivedMessage = ReadMessage(socket);
     receivedMessage.pop_back();
     cout << "Server dice que: "<<receivedMessage<<endl;
 
-    //send the image source
+    //Envia la imagen fuente
     /*for (int i = 0; i < blocks.size() ; i++){
         cv::Mat TEMP = blocks[i];
         std::string serialized = save(TEMP);
@@ -171,7 +174,7 @@ int main() {
     }*/
 
 
-     boost::asio::io_service io_service; // Servicio de input/output
+    boost::asio::io_service io_service; // Servicio de input/output
     boost::asio::ip::tcp::socket socket(io_service); // Declaracion de socket para conexiones
     boost::system::error_code error; // Variable para codigo de error especifico de Boost
     boost::asio::streambuf receive_buffer; // Buffer para recibir mensajes
@@ -196,8 +199,7 @@ int main() {
         cout << "error" << error.message() << endl;
     } else {
         const char* inMessage = boost::asio::buffer_cast<const char*>(receive_buffer.data()); // Interpreta mensaje recibido
-        cout << "Servidor dice: " + (string) inMessage << endl; // Se hace cast a string al inMessage ya que es un const char pointer,
-                                                                  // para poder concatenarlo basicamente
+        cout << "Servidor dice: " + (string) inMessage << endl; // Se hace cast a string al inMessage ya que es un const char pointer, para poder concatenarlo
     }
     return 0;
 }
